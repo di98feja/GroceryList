@@ -83,6 +83,12 @@
     <Folder Include="ManageGroceries\" />
     <Folder Include="Sharing\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GroceryList\GroceryList\GroceryList.csproj">
+      <Project>{28d4a546-94ea-4074-8467-d076e539ce26}</Project>
+      <Name>GroceryList</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
