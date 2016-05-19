@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GroceryList.Model;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using GroceryList.Interfaces;
 
 namespace GroceryList.ViewModel
 {
@@ -87,7 +88,17 @@ namespace GroceryList.ViewModel
 			}
 		}
 
-		private ShoppingList m_shoppingList;
+    private async void PushChangesToStorage(ShoppingList shoppingList)
+    {
+      string key = await m_storageWrapper.WriteShoppingList(shoppingList);
+    }
 
+    private async Task<ShoppingList> PullChangesFromStorage(string key)
+    {
+      return await m_storageWrapper.ReadShoppingList(key);
+    }
+
+		private ShoppingList m_shoppingList;
+    private IStorageWrapper m_storageWrapper;
 	}
 }
