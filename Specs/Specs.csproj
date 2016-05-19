@@ -69,6 +69,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ManageGroceries\ANewGroceryItemIsCreated.cs" />
     <Compile Include="ManageLists\UserClearList.cs" />
     <Compile Include="ManageLists\UserEditGroceryAmount.cs" />
     <Compile Include="ManageLists\UserPickGroceryToAdd.cs" />
@@ -80,7 +81,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ManageGroceries\" />
     <Folder Include="Sharing\" />
   </ItemGroup>
   <Choose>
