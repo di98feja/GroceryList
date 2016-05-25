@@ -39,25 +39,29 @@ namespace GroceryList.Services
       throw new NotImplementedException();
     }
 
-    public async Task<string> WriteGroceryItem(GroceryItem item)
+    public async Task<StorageResponse> WriteGroceryItem(GroceryItem item)
     {
       var jsonEncodedData = JsonConvert.SerializeObject(item);
       HttpClient http = new HttpClient();
       http.BaseAddress = new Uri(string.Format("{0}/GroceryItems/{1}.json", m_firebaseUrl, item.Id));
       StringContent content = new StringContent(jsonEncodedData);
       var response = await http.PutAsync(http.BaseAddress, content);
-      response.EnsureSuccessStatusCode();
-      return item.Id;
+      return response.IsSuccessStatusCode ? StorageResponse.Success : StorageResponse.Failure;
     }
 
-    public Task<string> WriteGroceryList(List<GroceryItem> list)
+    public Task<StorageResponse> WriteGroceryList(List<GroceryItem> list)
     {
       throw new NotImplementedException();
     }
 
-    public Task<string> WriteShoppingList(ShoppingList shoppingList)
+    public async Task<StorageResponse> WriteShoppingList(ShoppingList shoppingList)
     {
-      throw new NotImplementedException();
+      var jsonEncodedData = JsonConvert.SerializeObject(shoppingList);
+      HttpClient http = new HttpClient();
+      http.BaseAddress = new Uri(string.Format("{0}/GroceryItems/{1}.json", m_firebaseUrl, shoppingList.Id));
+      StringContent content = new StringContent(jsonEncodedData);
+      var response = await http.PutAsync(http.BaseAddress, content);
+      return response.IsSuccessStatusCode ? StorageResponse.Success : StorageResponse.Failure;
     }
 
     private string m_firebaseUrl;

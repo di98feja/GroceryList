@@ -18,10 +18,10 @@ namespace Specs.ManageLists
 		[Fact(DisplayName = "All groceries is removed from list")]
 		public async void ListIsEmptied()
 		{
-			var list = new ShoppingList("MyTestList");
-			var groceryItem1 = new GroceryItem("MyTestItem_1");
-			var groceryItem2 = new GroceryItem("MyTestItem_2");
-			var groceryItem3 = new GroceryItem("MyTestItem_3");
+			var list = new ShoppingList("MyTestList", "MyTestListKey");
+			var groceryItem1 = new GroceryItem("MyTestItem_1", "ItemId1");
+			var groceryItem2 = new GroceryItem("MyTestItem_2", "ItemId2");
+			var groceryItem3 = new GroceryItem("MyTestItem_3", "ItemId3");
 			list.GroceryItems.Add(groceryItem1);
 			list.GroceryItems.Add(groceryItem2);
 			list.GroceryItems.Add(groceryItem3);

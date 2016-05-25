@@ -86,7 +86,7 @@ namespace GroceryList.ViewModel
 
 		private async void PushChangesToStorage(ShoppingList list)
 		{
-			string key = await m_storageWrapper.WriteShoppingList(list);
+			var response = await m_storageWrapper.WriteShoppingList(list);
 		}
 
 		private async Task<ShoppingList> PullChangesFromStorage(string key)

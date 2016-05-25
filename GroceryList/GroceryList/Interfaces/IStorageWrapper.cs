@@ -7,18 +7,17 @@ using System.Threading.Tasks;
 
 namespace GroceryList.Interfaces
 {
+  public enum StorageResponse { Success, Failure };
+
   public interface IStorageWrapper
   {
-    Task<string> WriteShoppingList(ShoppingList shoppingList);
+    Task<StorageResponse> WriteShoppingList(ShoppingList shoppingList);
+    Task<StorageResponse> WriteGroceryItem(GroceryItem item);
+    Task<StorageResponse> WriteGroceryList(List<GroceryItem> list);
 
     Task<ShoppingList> ReadShoppingList(string key);
-
 		Task<GroceryItem> ReadGroceryItem(string key);
-
-		Task<string> WriteGroceryItem(GroceryItem item);
-
 		Task<List<GroceryItem>> ReadGroceryList();
 
-		Task<string> WriteGroceryList(List<GroceryItem> list);
   }
 }

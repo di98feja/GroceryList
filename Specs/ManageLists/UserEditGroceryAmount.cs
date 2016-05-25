@@ -18,8 +18,8 @@ namespace Specs.ManageLists
 		[Fact(DisplayName = "Grocery amount is updated")]
 		public async void GroceryAmountIsUpdated()
 		{
-			var list = new ShoppingList("MyTestList");
-			var groceryItem1 = new GroceryItem("MyTestItem_1");
+			var list = new ShoppingList("MyTestList", "MyTestListKey");
+			var groceryItem1 = new GroceryItem("MyTestItem_1", "ItemId1");
 			list.GroceryItems.Add(groceryItem1);
 
 			var storageMock = new Mock<IStorageWrapper>();

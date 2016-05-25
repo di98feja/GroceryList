@@ -1,4 +1,7 @@
-﻿using System;
+﻿using GroceryList.Interfaces;
+using GroceryList.Model;
+using GroceryList.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,9 +14,16 @@ namespace Specs.StorageService
   public class PushValidShoppingList
   {
     [Fact(DisplayName = "Shoppinglist is written to storage")]
-    public void PushListToStorage()
+    public async void PushListToStorage()
     {
-      throw new NotImplementedException();
+      var list = new ShoppingList("MyTestList", "MyTestListKey");
+      list.GroceryItems.Add(new GroceryItem("Item1", "Item1ID") { Amount = 1, InBasket = false });
+      list.GroceryItems.Add(new GroceryItem("Item2", "Item2ID") { Amount = 2, InBasket = true });
+      list.GroceryItems.Add(new GroceryItem("Item3", "Item3ID") { Amount = 3, InBasket = false });
+
+      var storage = new FirebaseStorageService(string.Format("{0}/TEST", FirebaseStorageService.FIREBASE_URL));
+      var response = await storage.WriteShoppingList(list);
+      Assert.Equal(StorageResponse.Success, response);
     }
   }
 }

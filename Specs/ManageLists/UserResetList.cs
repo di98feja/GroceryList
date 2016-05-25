@@ -18,10 +18,10 @@ namespace Specs.ManageLists
 		[Fact(DisplayName = "All groceries is marked as not picked")]
 		public async void AllGroceriesIsUnpicked()
 		{
-			var list = new ShoppingList("MyTestList");
-			var groceryItem1 = new GroceryItem("MyTestItem_1") { InBasket = true };
-			var groceryItem2 = new GroceryItem("MyTestItem_2") { InBasket = true };
-			var groceryItem3 = new GroceryItem("MyTestItem_3") { InBasket = true };
+			var list = new ShoppingList("MyTestList", "MyTestListKey");
+			var groceryItem1 = new GroceryItem("MyTestItem_1", "ItemId1") { InBasket = true };
+			var groceryItem2 = new GroceryItem("MyTestItem_2", "ItemId2") { InBasket = true };
+			var groceryItem3 = new GroceryItem("MyTestItem_3", "ItemId3") { InBasket = true };
 			list.GroceryItems.Add(groceryItem1);
 			list.GroceryItems.Add(groceryItem2);
 			list.GroceryItems.Add(groceryItem3);

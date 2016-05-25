@@ -16,13 +16,13 @@ namespace Specs.ManageLists
 		[Fact(DisplayName = "Grocery is added to list")]
 		public async void GroceryIsAddedToList()
 		{
-			var list = new ShoppingList("MyTestList");
-			var groceryItem = new GroceryItem("MyTestItem");
+			var list = new ShoppingList("MyTestList", "MyTestListKey");
+			var groceryItem = new GroceryItem("MyTestItem", "ItemId1");
 			var storageMock = new Mock<IStorageWrapper>();
 			bool listWasReadFromStorage = false;
 			bool listWasWrittenToStorage = false;
 			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list).Callback(delegate { listWasReadFromStorage = true; });
-			storageMock.Setup(storage => storage.WriteShoppingList(list)).ReturnsAsync("MyTestListKey").Callback(delegate { listWasWrittenToStorage = true; });
+			storageMock.Setup(storage => storage.WriteShoppingList(list)).ReturnsAsync(StorageResponse.Success).Callback(delegate { listWasWrittenToStorage = true; });
 
 			var vm = await ShoppingListViewModel.CreateViewModelAsync("MyTestListKey", storageMock.Object);
 			Assert.True(listWasReadFromStorage);

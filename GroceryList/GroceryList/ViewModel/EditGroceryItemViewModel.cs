@@ -24,15 +24,12 @@ namespace GroceryList.ViewModel
 
 		private async void PushChangesToStorage(GroceryItem item)
 		{
-			string key = await m_storageWrapper.WriteGroceryItem(item);
+			var response = await m_storageWrapper.WriteGroceryItem(item);
 		}
 
 		private async Task<GroceryItem> PullChangesFromStorage(string key)
 		{
 			return await m_storageWrapper.ReadGroceryItem(key);
 		}
-
-
-		private IStorageWrapper m_storage;
 	}
 }

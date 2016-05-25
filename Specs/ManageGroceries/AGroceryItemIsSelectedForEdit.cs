@@ -21,14 +21,14 @@ namespace Specs.ManageGroceries
 
 		private async void Init()
 		{
-			var item = new GroceryItem("MyTestItem");
+			var item = new GroceryItem("MyTestItem", "MyTestItemKey");
 			var list = new List<GroceryItem>();
 			var storageMock = new Mock<IStorageWrapper>();
 			ItemWasReadFromStorage = false;
 			ItemWasWrittenToStorage = false;
 			storageMock.Setup(storage => storage.ReadGroceryList()).ReturnsAsync(list);
 			storageMock.Setup(storage => storage.ReadGroceryItem("MyTestItemKey")).ReturnsAsync(item).Callback(delegate { ItemWasReadFromStorage = true; });
-			storageMock.Setup(storage => storage.WriteGroceryItem(item)).ReturnsAsync("MyTestItemKey").Callback(delegate { ItemWasWrittenToStorage = true; });
+			storageMock.Setup(storage => storage.WriteGroceryItem(item)).ReturnsAsync(StorageResponse.Success).Callback(delegate { ItemWasWrittenToStorage = true; });
 
 			ViewModel = await GroceryItemsListViewModel.CreateViewModelAsync(storageMock.Object);
 		}

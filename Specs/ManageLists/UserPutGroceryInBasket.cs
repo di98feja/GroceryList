@@ -18,8 +18,8 @@ namespace Specs.ManageLists
 		[Fact(DisplayName = "Grocery is marked as picked")]
 		public async void GroceryIsMarkedAsPicked()
 		{
-			var list = new ShoppingList("MyTestList");
-			var groceryItem = new GroceryItem("MyTestItem");
+			var list = new ShoppingList("MyTestList", "MyTestListKey");
+			var groceryItem = new GroceryItem("MyTestItem", "ItemId1");
 			list.GroceryItems.Add(groceryItem);
 			var storageMock = new Mock<IStorageWrapper>();
 			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list);

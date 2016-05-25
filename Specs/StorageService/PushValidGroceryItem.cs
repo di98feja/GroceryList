@@ -16,8 +16,7 @@ namespace Specs.StorageService
     public async void ItemIsWritten()
     {
       var storage = new FirebaseStorageService(string.Format("{0}/TEST", FirebaseStorageService.FIREBASE_URL));
-      var groceryItem = new GroceryItem("MyItemName");
-      groceryItem.Id = "MyTestItemId";
+      var groceryItem = new GroceryItem("MyItemName", "MyTestItemId");
       await storage.WriteGroceryItem(groceryItem);
     }
   }

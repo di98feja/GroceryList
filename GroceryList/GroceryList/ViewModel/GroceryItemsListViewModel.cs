@@ -28,7 +28,7 @@ namespace GroceryList.ViewModel
 
 		public GroceryItem CreateNewGroceryItem()
 		{
-			var groceryItem = new GroceryItem("Ny vara");
+			var groceryItem = new GroceryItem("Ny vara", Guid.NewGuid().ToString());
 			m_groceryItems.Add(groceryItem);
 			NotifyChanged("GroceryItems");
 			return groceryItem;
@@ -49,7 +49,7 @@ namespace GroceryList.ViewModel
 
 		private async void PushChangesToStorage(List<GroceryItem> list)
 		{
-			string key = await m_storageWrapper.WriteGroceryList(list);
+			var response = await m_storageWrapper.WriteGroceryList(list);
 		}
 
 		private async Task<List<GroceryItem>> PullChangesFromStorage()

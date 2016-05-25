@@ -2,8 +2,9 @@
 {
 	public class GroceryItem
 	{
-		public GroceryItem(string name)
+		public GroceryItem(string name, string id)
 		{
+      Id = id;
 			Name = name;
 		}
 
