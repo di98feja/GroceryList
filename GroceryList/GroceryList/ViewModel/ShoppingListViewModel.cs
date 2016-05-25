@@ -10,20 +10,21 @@ using GroceryList.Interfaces;
 
 namespace GroceryList.ViewModel
 {
-	public class ShoppingListViewModel : INotifyPropertyChanged
+	public class ShoppingListViewModel : ViewModelBase
 	{
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		public ShoppingListViewModel(ShoppingList defaultShoppingList)
+		public async static Task<ShoppingListViewModel> CreateViewModelAsync(string shoppingListID, IStorageWrapper storageImplementation)
 		{
-			if (null == defaultShoppingList)
-				defaultShoppingList = new ShoppingList("DefaultShoppingList");
-			m_shoppingList = defaultShoppingList;
+			var vm = new ShoppingListViewModel(storageImplementation);
+			vm.m_shoppingList = await vm.PullChangesFromStorage(shoppingListID);
+			return vm;
 		}
+
+		private ShoppingListViewModel(IStorageWrapper storage) : base(storage) { }
 
 		public void ClearList()
 		{
 			DefaultShoppingList.GroceryItems.Clear();
+			PushChangesToStorage(DefaultShoppingList);
 			NotifyChanged("DefaultShoppingList");
 		}
 
@@ -32,6 +33,7 @@ namespace GroceryList.ViewModel
 			if (null == item)
 				throw new ArgumentNullException("item must not be null");
 			m_shoppingList.GroceryItems.Add(item);
+			PushChangesToStorage(DefaultShoppingList);
 			NotifyChanged("DefaultShoppingList");
 		}
 
@@ -48,6 +50,7 @@ namespace GroceryList.ViewModel
 				return;
 
 			itemInList.InBasket = state;
+			PushChangesToStorage(DefaultShoppingList);
 			NotifyChanged("DefaultShoppingList");
 		}
 
@@ -64,6 +67,7 @@ namespace GroceryList.ViewModel
 				return;
 
 			itemInList.Amount = amount;
+			PushChangesToStorage(DefaultShoppingList);
 			NotifyChanged("DefaultShoppingList");
 		}
 
@@ -80,25 +84,16 @@ namespace GroceryList.ViewModel
 			}
 		}
 
-		private void NotifyChanged([CallerMemberName] string propertyName = "")
+		private async void PushChangesToStorage(ShoppingList list)
 		{
-			if (null != PropertyChanged)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
+			string key = await m_storageWrapper.WriteShoppingList(list);
 		}
 
-    private async void PushChangesToStorage(ShoppingList shoppingList)
-    {
-      string key = await m_storageWrapper.WriteShoppingList(shoppingList);
-    }
-
-    private async Task<ShoppingList> PullChangesFromStorage(string key)
-    {
-      return await m_storageWrapper.ReadShoppingList(key);
-    }
+		private async Task<ShoppingList> PullChangesFromStorage(string key)
+		{
+			return await m_storageWrapper.ReadShoppingList(key);
+		}
 
 		private ShoppingList m_shoppingList;
-    private IStorageWrapper m_storageWrapper;
 	}
 }

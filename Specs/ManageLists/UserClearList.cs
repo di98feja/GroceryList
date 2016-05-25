@@ -7,6 +7,8 @@ using Xunit;
 using GroceryList.ViewModel;
 using GroceryList.Model;
 using System.ComponentModel;
+using Moq;
+using GroceryList.Interfaces;
 
 namespace Specs.ManageLists
 {
@@ -14,7 +16,7 @@ namespace Specs.ManageLists
 	public class UserClearList
 	{
 		[Fact(DisplayName = "All groceries is removed from list")]
-		public void ListIsEmptied()
+		public async void ListIsEmptied()
 		{
 			var list = new ShoppingList("MyTestList");
 			var groceryItem1 = new GroceryItem("MyTestItem_1");
@@ -23,7 +25,11 @@ namespace Specs.ManageLists
 			list.GroceryItems.Add(groceryItem1);
 			list.GroceryItems.Add(groceryItem2);
 			list.GroceryItems.Add(groceryItem3);
-			var vm = new ShoppingListViewModel(list);
+
+			var storageMock = new Mock<IStorageWrapper>();
+			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list);
+
+			var vm = await ShoppingListViewModel.CreateViewModelAsync("MyTestListKey", storageMock.Object);
 			bool wasCalled = false;
 			vm.PropertyChanged += delegate (object caller, PropertyChangedEventArgs args)
 			{

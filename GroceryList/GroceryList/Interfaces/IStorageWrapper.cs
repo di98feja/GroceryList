@@ -13,5 +13,12 @@ namespace GroceryList.Interfaces
 
     Task<ShoppingList> ReadShoppingList(string key);
 
+		Task<GroceryItem> ReadGroceryItem(string key);
+
+		Task<string> WriteGroceryItem(GroceryItem item);
+
+		Task<List<GroceryItem>> ReadGroceryList();
+
+		Task<string> WriteGroceryList(List<GroceryItem> list);
   }
 }

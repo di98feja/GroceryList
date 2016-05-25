@@ -7,16 +7,28 @@ using Xunit;
 using GroceryList.ViewModel;
 using GroceryList.Model;
 using System.ComponentModel;
+using GroceryList.Interfaces;
+using Moq;
 
 namespace Specs.ManageGroceries
 {
+
 	[Trait("New grocery is created", "")]
 	public class ANewGroceryItemIsCreated
 	{
-		[Fact(DisplayName = "An empty item is added to grocery items collection")]
-		public void AnEmptyItemIsAddedToGroceryItemsCollection()
+		public void Setup()
 		{
-			var vm = new GroceryItemsListViewModel();
+			var list = new List<GroceryItem>();
+			var storageMock = new Mock<IStorageWrapper>();
+			storageMock.Setup(storage => storage.ReadGroceryList()).ReturnsAsync(list);
+			m_storageMock = storageMock.Object;
+		}
+
+		[Fact(DisplayName = "An empty item is added to grocery items collection")]
+		public async void AnEmptyItemIsAddedToGroceryItemsCollection()
+		{
+			Setup();
+			var vm = await GroceryItemsListViewModel.CreateViewModelAsync(m_storageMock);
 			var item = vm.CreateNewGroceryItem();
 			Assert.Contains(item, vm.GroceryItems);
 		}
@@ -27,5 +39,6 @@ namespace Specs.ManageGroceries
 			throw new NotImplementedException();
 		}
 
+		IStorageWrapper m_storageMock;
 	}
 }

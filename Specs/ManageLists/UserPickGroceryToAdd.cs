@@ -3,6 +3,8 @@ using Xunit;
 using GroceryList.Model;
 using GroceryList.ViewModel;
 using System.ComponentModel;
+using Moq;
+using GroceryList.Interfaces;
 
 namespace Specs.ManageLists
 {
@@ -10,12 +12,20 @@ namespace Specs.ManageLists
 	[Trait("User pick a grocery to add", "")]
 	public class UserPickGroceryToAdd
 	{
+
 		[Fact(DisplayName = "Grocery is added to list")]
-		public void GroceryIsAddedToList()
+		public async void GroceryIsAddedToList()
 		{
 			var list = new ShoppingList("MyTestList");
 			var groceryItem = new GroceryItem("MyTestItem");
-			var vm = new ShoppingListViewModel(list);
+			var storageMock = new Mock<IStorageWrapper>();
+			bool listWasReadFromStorage = false;
+			bool listWasWrittenToStorage = false;
+			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list).Callback(delegate { listWasReadFromStorage = true; });
+			storageMock.Setup(storage => storage.WriteShoppingList(list)).ReturnsAsync("MyTestListKey").Callback(delegate { listWasWrittenToStorage = true; });
+
+			var vm = await ShoppingListViewModel.CreateViewModelAsync("MyTestListKey", storageMock.Object);
+			Assert.True(listWasReadFromStorage);
 			bool wasCalled = false;
 			vm.PropertyChanged += delegate (object caller, PropertyChangedEventArgs args)
 			{
@@ -24,12 +34,7 @@ namespace Specs.ManageLists
 			};
 			vm.AddGroceryItem(groceryItem);
 			Assert.True(wasCalled);
-		}
-
-		[Fact(DisplayName = "List is persisted")]
-		public void ListIsPersisted()
-		{
-			throw new NotImplementedException();
+			Assert.True(listWasWrittenToStorage);
 		}
 	}
 }

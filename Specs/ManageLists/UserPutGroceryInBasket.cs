@@ -7,6 +7,8 @@ using Xunit;
 using GroceryList.ViewModel;
 using GroceryList.Model;
 using System.ComponentModel;
+using Moq;
+using GroceryList.Interfaces;
 
 namespace Specs.ManageLists
 {
@@ -14,12 +16,15 @@ namespace Specs.ManageLists
 	public class UserPutGroceryInBasket
 	{
 		[Fact(DisplayName = "Grocery is marked as picked")]
-		public void GroceryIsMarkedAsPicked()
+		public async void GroceryIsMarkedAsPicked()
 		{
 			var list = new ShoppingList("MyTestList");
 			var groceryItem = new GroceryItem("MyTestItem");
 			list.GroceryItems.Add(groceryItem);
-			var vm = new ShoppingListViewModel(list);
+			var storageMock = new Mock<IStorageWrapper>();
+			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list);
+
+			var vm = await ShoppingListViewModel.CreateViewModelAsync("MyTestListKey", storageMock.Object);
 			bool wasCalled = false;
 			vm.PropertyChanged += delegate (object caller, PropertyChangedEventArgs args)
 			{

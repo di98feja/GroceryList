@@ -38,6 +38,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Moq, Version=4.2.1510.2205, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\packages\Moq.4.2.1510.2205\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
       <HintPath>..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
@@ -69,6 +73,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ManageGroceries\AGroceryItemIsSelectedForEdit.cs" />
     <Compile Include="ManageGroceries\ANewGroceryItemIsCreated.cs" />
     <Compile Include="ManageLists\UserClearList.cs" />
     <Compile Include="ManageLists\UserEditGroceryAmount.cs" />
@@ -76,6 +81,9 @@
     <Compile Include="ManageLists\UserPutGroceryInBasket.cs" />
     <Compile Include="ManageLists\UserResetList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StorageService\PullValidGroceryItem.cs" />
+    <Compile Include="StorageService\PushValidGroceryItem.cs" />
+    <Compile Include="StorageService\PushValidShoppingList.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
