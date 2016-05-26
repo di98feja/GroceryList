@@ -21,49 +21,62 @@ namespace GroceryList.Services
 
     public async Task<GroceryItem> ReadGroceryItem(string key)
     {
-      HttpClient http = new HttpClient();
-      http.BaseAddress = new Uri(string.Format("{0}/GroceryItems/{1}.json",m_firebaseUrl, key));
+			HttpClient http = CreateHttpClient(key);
       var response = await http.GetAsync(http.BaseAddress);
       response.EnsureSuccessStatusCode();
       var jsonResult = response.Content.ReadAsStringAsync().Result;
       return JsonConvert.DeserializeObject<GroceryItem>(jsonResult);
     }
 
-    public Task<List<GroceryItem>> ReadGroceryList()
+    public async Task<List<GroceryItem>> ReadGroceryList()
     {
-      throw new NotImplementedException();
-    }
+			HttpClient http = CreateHttpClient("GroceryTypes");
+			var response = await http.GetAsync(http.BaseAddress);
+			response.EnsureSuccessStatusCode();
+			var jsonResult = response.Content.ReadAsStringAsync().Result;
+			return JsonConvert.DeserializeObject<List<GroceryItem>>(jsonResult);
+		}
 
-    public Task<ShoppingList> ReadShoppingList(string key)
+		public async Task<ShoppingList> ReadShoppingList(string key)
     {
-      throw new NotImplementedException();
-    }
+			HttpClient http = CreateHttpClient(key);
+			var response = await http.GetAsync(http.BaseAddress);
+			response.EnsureSuccessStatusCode();
+			var jsonResult = response.Content.ReadAsStringAsync().Result;
+			return JsonConvert.DeserializeObject<ShoppingList>(jsonResult);
+		}
 
-    public async Task<StorageResponse> WriteGroceryItem(GroceryItem item)
+		public async Task<StorageResponse> WriteGroceryItem(GroceryItem item)
     {
       var jsonEncodedData = JsonConvert.SerializeObject(item);
-      HttpClient http = new HttpClient();
-      http.BaseAddress = new Uri(string.Format("{0}/GroceryItems/{1}.json", m_firebaseUrl, item.Id));
-      StringContent content = new StringContent(jsonEncodedData);
-      var response = await http.PutAsync(http.BaseAddress, content);
+			HttpClient http = CreateHttpClient(item.Id);
+      var response = await http.PutAsync(http.BaseAddress, new StringContent(jsonEncodedData));
       return response.IsSuccessStatusCode ? StorageResponse.Success : StorageResponse.Failure;
     }
 
-    public Task<StorageResponse> WriteGroceryList(List<GroceryItem> list)
+    public async Task<StorageResponse> WriteGroceryList(List<GroceryItem> list)
     {
-      throw new NotImplementedException();
-    }
+			var jsonEncodedData = JsonConvert.SerializeObject(list);
+			HttpClient http = CreateHttpClient("GroceryTypes");
+			var response = await http.PutAsync(http.BaseAddress, new StringContent(jsonEncodedData));
+			return response.IsSuccessStatusCode ? StorageResponse.Success : StorageResponse.Failure;
+		}
 
-    public async Task<StorageResponse> WriteShoppingList(ShoppingList shoppingList)
-    {
-      var jsonEncodedData = JsonConvert.SerializeObject(shoppingList);
-      HttpClient http = new HttpClient();
-      http.BaseAddress = new Uri(string.Format("{0}/GroceryItems/{1}.json", m_firebaseUrl, shoppingList.Id));
-      StringContent content = new StringContent(jsonEncodedData);
-      var response = await http.PutAsync(http.BaseAddress, content);
-      return response.IsSuccessStatusCode ? StorageResponse.Success : StorageResponse.Failure;
-    }
+		public async Task<StorageResponse> WriteShoppingList(ShoppingList shoppingList)
+		{
+			var jsonEncodedData = JsonConvert.SerializeObject(shoppingList);
+			HttpClient http = CreateHttpClient(shoppingList.Id);
+			var response = await http.PutAsync(http.BaseAddress, new StringContent(jsonEncodedData));
+			return response.IsSuccessStatusCode ? StorageResponse.Success : StorageResponse.Failure;
+		}
 
-    private string m_firebaseUrl;
+		private HttpClient CreateHttpClient(string storageItemkey)
+		{
+			HttpClient http = new HttpClient();
+			http.BaseAddress = new Uri(string.Format("{0}/GroceryItems/{1}.json", m_firebaseUrl, storageItemkey));
+			return http;
+		}
+
+		private string m_firebaseUrl;
   }
 }
