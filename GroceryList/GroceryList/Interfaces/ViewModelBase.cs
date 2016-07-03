@@ -23,12 +23,38 @@ namespace GroceryList.Interfaces
 
 		protected void NotifyChanged([CallerMemberName] string propertyName = "")
 		{
-			if (null != PropertyChanged)
+      if (null == PropertyChanged) return;
+
+      if (!m_propertiesToNotify.Contains(propertyName) && propertyName != "EndBatchUpdate")
+        m_propertiesToNotify.Add(propertyName);
+
+      if (m_batchUpdateCount == 0)
 			{
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        foreach (string property in m_propertiesToNotify)
+				  PropertyChanged(this, new PropertyChangedEventArgs(property));
+        m_propertiesToNotify.Clear();
 			}
 		}
 
+    public void BeginBatchUpdate()
+    {
+      m_batchUpdateCount++;
+    }
+
+    public void EndBatchUpdate()
+    {
+      m_batchUpdateCount -= 1;
+      if (m_batchUpdateCount < 0)
+        throw new InvalidOperationException("Begin/End batch update not in sync");
+
+      if (m_batchUpdateCount == 0)
+      {
+        NotifyChanged();
+      }
+    }
+
+    protected List<string> m_propertiesToNotify = new List<string>();
 		protected IStorageWrapper m_storageWrapper;
+    protected int m_batchUpdateCount;
 	}
 }

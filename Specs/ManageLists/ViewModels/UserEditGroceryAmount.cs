@@ -10,17 +10,18 @@ using System.ComponentModel;
 using Moq;
 using GroceryList.Interfaces;
 
-namespace Specs.ManageLists
+namespace Specs.ManageLists.ViewModel
 {
-	[Trait("User put grocery in basket", "")]
-	public class UserPutGroceryInBasket
+	[Trait("User edit grocery amount", "")]
+	public class UserEditGroceryAmount
 	{
-		[Fact(DisplayName = "Grocery is marked as picked")]
-		public async void GroceryIsMarkedAsPicked()
+		[Fact(DisplayName = "Grocery amount is updated")]
+		public async void GroceryAmountIsUpdated()
 		{
 			var list = new ShoppingList("MyTestList", "MyTestListKey");
-			var groceryItem = new GroceryItem("MyTestItem", "ItemId1");
-			list.GroceryItems.Add(groceryItem);
+			var groceryItem1 = new GroceryItem("MyTestItem_1", "ItemId1");
+			list.Add(groceryItem1);
+
 			var storageMock = new Mock<IStorageWrapper>();
 			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list);
 
@@ -28,14 +29,11 @@ namespace Specs.ManageLists
 			bool wasCalled = false;
 			vm.PropertyChanged += delegate (object caller, PropertyChangedEventArgs args)
 			{
-				var item = vm.DefaultShoppingList.GroceryItems[0];
-				Assert.True(item.InBasket);
+				Assert.Equal(12.34, vm.DefaultShoppingList[0].Amount);
 				wasCalled = true;
 			};
-			vm.SetItemInBasketState(groceryItem, true);
+			vm.SetItemAmount(groceryItem1, 12.34);
 			Assert.True(wasCalled);
 		}
-
-
 	}
 }

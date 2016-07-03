@@ -1,21 +1,25 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace GroceryList.Model
 {
-	public class ShoppingList
-	{
-		public ShoppingList(string name, string id)
-		{
+  public class ShoppingList : ObservableCollection<GroceryItem>
+  {
+    public ShoppingList()
+      : this(string.Empty, string.Empty)
+    { }
+
+    public ShoppingList(string name, string id)
+    {
       Id = id;
-			Name = name;
-			GroceryItems = new List<GroceryItem>();
-		}
+      Name = name;
+    }
 
     public string Id { get; set; }
 
-		public string Name { get; set; }
-
-		public List<GroceryItem> GroceryItems { get; }
-	}
+    public string Name { get; set; }
+  }
 }

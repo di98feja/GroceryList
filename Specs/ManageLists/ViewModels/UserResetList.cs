@@ -10,18 +10,21 @@ using System.ComponentModel;
 using Moq;
 using GroceryList.Interfaces;
 
-namespace Specs.ManageLists
+namespace Specs.ManageLists.ViewModel
 {
-	[Trait("User edit grocery amount", "")]
-	public class UserEditGroceryAmount
+	[Trait("User reset list", "")]
+	public class UserResetList
 	{
-		[Fact(DisplayName = "Grocery amount is updated")]
-		public async void GroceryAmountIsUpdated()
+		[Fact(DisplayName = "All groceries is marked as not picked")]
+		public async void AllGroceriesIsUnpicked()
 		{
 			var list = new ShoppingList("MyTestList", "MyTestListKey");
-			var groceryItem1 = new GroceryItem("MyTestItem_1", "ItemId1");
-			list.GroceryItems.Add(groceryItem1);
-
+			var groceryItem1 = new GroceryItem("MyTestItem_1", "ItemId1") { InBasket = true };
+			var groceryItem2 = new GroceryItem("MyTestItem_2", "ItemId2") { InBasket = true };
+			var groceryItem3 = new GroceryItem("MyTestItem_3", "ItemId3") { InBasket = true };
+			list.Add(groceryItem1);
+			list.Add(groceryItem2);
+			list.Add(groceryItem3);
 			var storageMock = new Mock<IStorageWrapper>();
 			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list);
 
@@ -29,10 +32,10 @@ namespace Specs.ManageLists
 			bool wasCalled = false;
 			vm.PropertyChanged += delegate (object caller, PropertyChangedEventArgs args)
 			{
-				Assert.Equal(12.34, vm.DefaultShoppingList.GroceryItems[0].Amount);
+				Assert.Equal(0, list.Where(i => i.InBasket).ToList().Count);
 				wasCalled = true;
 			};
-			vm.SetItemAmount(groceryItem1, 12.34);
+			vm.ClearList();
 			Assert.True(wasCalled);
 		}
 	}

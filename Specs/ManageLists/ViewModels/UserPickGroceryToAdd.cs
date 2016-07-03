@@ -6,7 +6,7 @@ using System.ComponentModel;
 using Moq;
 using GroceryList.Interfaces;
 
-namespace Specs.ManageLists
+namespace Specs.ManageLists.ViewModel
 {
 
 	[Trait("User pick a grocery to add", "")]
@@ -29,7 +29,7 @@ namespace Specs.ManageLists
 			bool wasCalled = false;
 			vm.PropertyChanged += delegate (object caller, PropertyChangedEventArgs args)
 			{
-				Assert.Contains(groceryItem, list.GroceryItems);
+				Assert.Contains(groceryItem, list);
 				wasCalled = true;
 			};
 			vm.AddGroceryItem(groceryItem);

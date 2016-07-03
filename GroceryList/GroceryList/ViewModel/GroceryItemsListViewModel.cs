@@ -14,7 +14,8 @@ namespace GroceryList.ViewModel
 		{
 			var vm = new GroceryItemsListViewModel(storageImplementation);
 			vm.m_groceryItems = await vm.PullChangesFromStorage();
-			return vm;
+      vm.PropertyChanged += delegate { vm.PushChangesToStorage(vm.m_groceryItems); };
+      return vm;
 		}
 
 		private GroceryItemsListViewModel(IStorageWrapper storage)

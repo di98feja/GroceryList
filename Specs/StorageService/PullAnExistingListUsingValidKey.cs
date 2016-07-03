@@ -17,7 +17,7 @@ namespace Specs.StorageService
 			var storage = new FirebaseStorageService(string.Format("{0}/TEST", FirebaseStorageService.FIREBASE_URL));
 			var list = await storage.ReadShoppingList("MyTestListKey");
 			Assert.NotNull(list);
-			Assert.Equal(3, list.GroceryItems.Count);
+			Assert.Equal(3, list.Count);
 		}
 	}
 }

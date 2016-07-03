@@ -10,7 +10,7 @@ using System.ComponentModel;
 using Moq;
 using GroceryList.Interfaces;
 
-namespace Specs.ManageLists
+namespace Specs.ManageLists.ViewModel
 {
 	[Trait("User clear list", "")]
 	public class UserClearList
@@ -22,9 +22,9 @@ namespace Specs.ManageLists
 			var groceryItem1 = new GroceryItem("MyTestItem_1", "ItemId1");
 			var groceryItem2 = new GroceryItem("MyTestItem_2", "ItemId2");
 			var groceryItem3 = new GroceryItem("MyTestItem_3", "ItemId3");
-			list.GroceryItems.Add(groceryItem1);
-			list.GroceryItems.Add(groceryItem2);
-			list.GroceryItems.Add(groceryItem3);
+			list.Add(groceryItem1);
+			list.Add(groceryItem2);
+			list.Add(groceryItem3);
 
 			var storageMock = new Mock<IStorageWrapper>();
 			storageMock.Setup(storage => storage.ReadShoppingList("MyTestListKey")).ReturnsAsync(list);
@@ -33,7 +33,7 @@ namespace Specs.ManageLists
 			bool wasCalled = false;
 			vm.PropertyChanged += delegate (object caller, PropertyChangedEventArgs args)
 			{
-				Assert.Equal(0, list.GroceryItems.Count);
+				Assert.Equal(0, list.Count);
 				wasCalled = true;
 			};
 			vm.ClearList();

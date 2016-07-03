@@ -1,21 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GroceryList.Model;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using GroceryList.Interfaces;
+using System.Collections.ObjectModel;
 
 namespace GroceryList.ViewModel
 {
-	public class ShoppingListViewModel : ViewModelBase
+  public class ShoppingListViewModel : ViewModelBase
 	{
 		public async static Task<ShoppingListViewModel> CreateViewModelAsync(string shoppingListID, IStorageWrapper storageImplementation)
 		{
 			var vm = new ShoppingListViewModel(storageImplementation);
 			vm.m_shoppingList = await vm.PullChangesFromStorage(shoppingListID);
+      if (null == vm.m_shoppingList)
+        vm.m_shoppingList = new ShoppingList("Inköpslista", shoppingListID);
+
+      vm.m_shoppingList.CollectionChanged += (src, e) =>
+      {
+        vm.NotifyChanged("GroceryItems");
+      };
+      
+      vm.PropertyChanged += delegate { vm.PushChangesToStorage(vm.m_shoppingList); };
+      vm.SortShoppingList(vm.DefaultShoppingList);
 			return vm;
 		}
 
@@ -23,18 +30,18 @@ namespace GroceryList.ViewModel
 
 		public void ClearList()
 		{
-			DefaultShoppingList.GroceryItems.Clear();
-			PushChangesToStorage(DefaultShoppingList);
-			NotifyChanged("DefaultShoppingList");
+			DefaultShoppingList.Clear();
+      SortShoppingList(DefaultShoppingList);
+			NotifyChanged("GroceriesGrouped");
 		}
 
 		public void AddGroceryItem(GroceryItem item)
 		{
 			if (null == item)
 				throw new ArgumentNullException("item must not be null");
-			m_shoppingList.GroceryItems.Add(item);
-			PushChangesToStorage(DefaultShoppingList);
-			NotifyChanged("DefaultShoppingList");
+			m_shoppingList.Add(item);
+      SortShoppingList(DefaultShoppingList);
+			NotifyChanged("GroceriesGrouped");
 		}
 
 		public void SetItemInBasketState(GroceryItem item, bool state)
@@ -42,24 +49,21 @@ namespace GroceryList.ViewModel
 			if (null == item)
 				throw new ArgumentNullException("item must not be null");
 
-			var itemInList = DefaultShoppingList.GroceryItems.FirstOrDefault(i => i.Name == item.Name);
+			var itemInList = DefaultShoppingList.FirstOrDefault(i => i.Name == item.Name);
 			if (null == itemInList)
 				throw new ArgumentException("item was not found in current list");
 
-			if (itemInList.InBasket == state)
-				return;
-
 			itemInList.InBasket = state;
-			PushChangesToStorage(DefaultShoppingList);
-			NotifyChanged("DefaultShoppingList");
+      SortShoppingList(DefaultShoppingList);
+      NotifyChanged("GroceriesGrouped");
 		}
 
-		public void SetItemAmount(GroceryItem item, double amount)
+    public void SetItemAmount(GroceryItem item, double amount)
 		{
 			if (null == item)
 				throw new ArgumentNullException("item must not be null");
 
-			var itemInList = DefaultShoppingList.GroceryItems.FirstOrDefault(i => i.Name == item.Name);
+			var itemInList = DefaultShoppingList.FirstOrDefault(i => i.Name == item.Name);
 			if (null == itemInList)
 				throw new ArgumentException("item was not found in current list");
 
@@ -67,9 +71,22 @@ namespace GroceryList.ViewModel
 				return;
 
 			itemInList.Amount = amount;
-			PushChangesToStorage(DefaultShoppingList);
-			NotifyChanged("DefaultShoppingList");
+			NotifyChanged("GroceriesGrouped");
 		}
+
+    public void SortShoppingList(ShoppingList shoppingList)
+    {
+      var sorted = from grocery in shoppingList
+                   orderby grocery.Name
+                   group grocery by grocery.InBasket into groceryGroup
+                   orderby groceryGroup.Key
+                   select new Grouping<bool, GroceryItem>(groceryGroup.Key, groceryGroup);
+
+      //create a new collection of groups
+      GroceriesGrouped = new ObservableCollection<Grouping<bool, GroceryItem>>();
+      foreach (var group in sorted)
+        GroceriesGrouped.Add(group);
+    }
 
 		public ShoppingList DefaultShoppingList
 		{
@@ -80,11 +97,14 @@ namespace GroceryList.ViewModel
 					throw new ArgumentNullException("DefaultShoppingList must not be null");
 
 				m_shoppingList = value;
+        SortShoppingList(DefaultShoppingList);
 				NotifyChanged();
 			}
 		}
 
-		private async void PushChangesToStorage(ShoppingList list)
+    public ObservableCollection<Grouping<bool, GroceryItem>> GroceriesGrouped { get; set; }
+
+    private async void PushChangesToStorage(ShoppingList list)
 		{
 			var response = await m_storageWrapper.WriteShoppingList(list);
 		}

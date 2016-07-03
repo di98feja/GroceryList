@@ -43,7 +43,8 @@ namespace GroceryList.Services
 			var response = await http.GetAsync(http.BaseAddress);
 			response.EnsureSuccessStatusCode();
 			var jsonResult = response.Content.ReadAsStringAsync().Result;
-			return JsonConvert.DeserializeObject<ShoppingList>(jsonResult);
+			var shoppingListWrapper = JsonConvert.DeserializeObject<ShoppingListWrapper>(jsonResult);
+      return shoppingListWrapper.ToShoppingList();
 		}
 
 		public async Task<StorageResponse> WriteGroceryItem(GroceryItem item)
@@ -64,7 +65,8 @@ namespace GroceryList.Services
 
 		public async Task<StorageResponse> WriteShoppingList(ShoppingList shoppingList)
 		{
-			var jsonEncodedData = JsonConvert.SerializeObject(shoppingList);
+      var shoppingListWrapper = new ShoppingListWrapper(shoppingList);
+			var jsonEncodedData = JsonConvert.SerializeObject(shoppingListWrapper);
 			HttpClient http = CreateHttpClient(shoppingList.Id);
 			var response = await http.PutAsync(http.BaseAddress, new StringContent(jsonEncodedData));
 			return response.IsSuccessStatusCode ? StorageResponse.Success : StorageResponse.Failure;
@@ -78,5 +80,34 @@ namespace GroceryList.Services
 		}
 
 		private string m_firebaseUrl;
+  }
+
+  class ShoppingListWrapper
+  {
+    public ShoppingListWrapper(ShoppingList list)
+    {
+      if (null == list) return;
+
+      Name = list.Name;
+      Id = list.Id;
+      Items = list;
+    }
+
+    public ShoppingList ToShoppingList()
+    {
+      ShoppingList shoppingList = new ShoppingList(Name, Id);
+      if (null != Items)
+      {
+        foreach (var item in Items)
+        {
+          shoppingList.Add(item);
+        }
+      }
+      return shoppingList;
+    }
+
+    public string Name { get; set; }
+    public string Id { get; set; }
+    public IEnumerable<GroceryItem> Items { get; set; }
   }
 }
